@@ -2,6 +2,8 @@ from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from .models import (
     User,
+    Espacio,
+    ParticipantesEspacio,
     Tablero,
     ParticipantesTablero,
     Lista,
@@ -14,6 +16,8 @@ from .models import (
 
 lista_modelos = [
     Tablero,
+    Espacio,
+    ParticipantesEspacio,
     ParticipantesTablero,
     Lista,
     Tarjeta,

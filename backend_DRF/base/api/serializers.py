@@ -1,6 +1,8 @@
 from rest_framework import serializers
 from base.models import (
     User,
+    Espacio,
+    ParticipantesEspacio,
     Tablero,
     ParticipantesTablero,
     Lista,
@@ -24,6 +26,18 @@ class RegistrationSerializer(serializers.ModelSerializer):
         user.set_password(validated_data["password"])
         user.save()
         return user
+
+
+class EspacioSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Espacio
+        fields = '__all__'
+    
+
+class ParticipantesEspacioSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ParticipantesEspacio
+        fields = '__all__'
 
 
 class TableroSerializer(serializers.ModelSerializer):

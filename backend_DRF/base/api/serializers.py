@@ -4,7 +4,6 @@ from base.models import (
     Espacio,
     ParticipantesEspacio,
     Tablero,
-    ParticipantesTablero,
     Lista,
     Tarjeta,
     Comentario,
@@ -43,12 +42,6 @@ class ParticipantesEspacioSerializer(serializers.ModelSerializer):
 class TableroSerializer(serializers.ModelSerializer):
     class Meta:
         model = Tablero
-        fields = '__all__'
-
-
-class ParticipantesTableroSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = ParticipantesTablero
         fields = '__all__'
 
 

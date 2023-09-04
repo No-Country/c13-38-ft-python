@@ -23,9 +23,9 @@ class Espacio(models.Model):
 
 class ParticipantesEspacio(models.Model):
     id_participante = models.ForeignKey(
-        settings.AUTH_USER_MODEL, null=True, on_delete=models.CASCADE)
+        settings.AUTH_USER_MODEL, null=False, on_delete=models.CASCADE)
     id_espacio = models.ForeignKey(
-        Espacio, null=True, on_delete=models.CASCADE)
+        Espacio, null=False, on_delete=models.CASCADE)
 
     class Meta:
         constraints = [
@@ -41,28 +41,11 @@ class Tablero(models.Model):
     nombre_tablero = models.CharField(max_length=30, null=False)
     creador_tablero = models.ForeignKey(
         settings.AUTH_USER_MODEL, null=False, on_delete=models.CASCADE)
-    participantes = models.ManyToManyField(
-        settings.AUTH_USER_MODEL, through="ParticipantesTablero", related_name="participantes_tablero")
+    espacio_id = models.ForeignKey(Espacio, null=False, on_delete=models.CASCADE)
     fecha_creacion = models.DateTimeField(auto_now_add=True, null=False)
 
     def __str__(self):
         return self.nombre_tablero
-
-
-class ParticipantesTablero(models.Model):
-    id_participante = models.ForeignKey(
-        settings.AUTH_USER_MODEL, null=False, on_delete=models.CASCADE)
-    id_tablero = models.ForeignKey(
-        Tablero, null=False, on_delete=models.CASCADE)
-
-    class Meta:
-        constraints = [
-            models.UniqueConstraint(
-                fields=['id_participante', 'id_tablero'], name='unique_participants_tablero')
-        ]
-
-    def __str__(self):
-        return f'Usuario: {self.id_participante.username} --- Tablero: {self.id_tablero.nombre_tablero}'
 
 
 class Lista(models.Model):

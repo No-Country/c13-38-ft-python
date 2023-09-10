@@ -87,6 +87,9 @@ def detalle_espacio(request, pk):
         info_espacio.update({'tableros': serializer_tablero.data})
         return Response(info_espacio)
 
+    if user != espacio.creador_espacio:
+        return Response(status=status.HTTP_403_FORBIDDEN)
+
     if request.method == 'PUT':
         request.data['creador_espacio'] = espacio.creador_espacio.id
         serializer = EspacioSerializer(instance=espacio, data=request.data)
@@ -211,11 +214,25 @@ def detalle_tablero(request, pk):
         return Response(status=status.HTTP_403_FORBIDDEN)
 
     if request.method == 'GET':
-        serializer = TableroSerializer(tablero)
-        return Response(serializer.data)
+        serializer_tablero = TableroSerializer(tablero)
+        serializer_listas = ListaSerializer(tablero.lista_set.all(), many=True)
+        info_tablero = serializer_tablero.data
+        info_listas = serializer_listas.data
+
+        for lista in info_listas:
+            tarjetas = TarjetaSerializer(Tarjeta.objects.filter(
+                lista_relacionada=lista['id']), many=True)
+            lista.update({'tarjetas': tarjetas.data})
+
+        info_tablero.update({'listas': info_listas})
+        return Response(info_tablero)
+
+    if tablero_pertenece_a_user == False:
+            return Response(status=status.HTTP_403_FORBIDDEN)
 
     if request.method == 'PUT':
         request.data['creador_tablero'] = tablero.creador_tablero.id
+        request.data['espacio_id'] = tablero.espacio_id.id
         serializer = TableroSerializer(instance=tablero, data=request.data)
         if serializer.is_valid():
             serializer.save()
@@ -225,3 +242,155 @@ def detalle_tablero(request, pk):
     if request.method == 'DELETE':
         tablero.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def lista(request):
+    user = request.user
+    request.data['creador_lista'] = user.id
+    serializer = ListaSerializer(data=request.data)
+    if serializer.is_valid():
+        tablero = Tablero.objects.get(id=request.data['tablero_relacionado'])
+        try:
+            ParticipantesEspacio.objects.get(
+                id_participante=user.id, id_espacio=tablero.espacio_id)
+        except ParticipantesEspacio.DoesNotExist:
+            return Response(status=status.HTTP_403_FORBIDDEN)
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['PUT', 'DELETE'])
+@permission_classes([IsAuthenticated])
+def detalle_lista(request, pk):
+    user = request.user
+    try:
+        lista = Lista.objects.get(id=pk)
+    except Lista.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+
+    if user != lista.creador_lista:
+        return Response(status=status.HTTP_403_FORBIDDEN)
+
+    if request.method == 'PUT':
+        request.data['creador_lista'] = lista.creador_lista.id
+        request.data['tablero_relacionado'] = lista.tablero_relacionado.id
+        serializer = ListaSerializer(instance=lista, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    if request.method == 'DELETE':
+        lista.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def tarjeta(request):
+    user = request.user
+    request.data['creador_tarjeta'] = user.id
+    serializer = TarjetaSerializer(data=request.data)
+    if serializer.is_valid():
+        lista_relacionada = Lista.objects.get(id=request.data['lista_relacionada'])
+        tablero_relacionado = lista_relacionada.tablero_relacionado
+        try:
+            ParticipantesEspacio.objects.get(
+                id_participante=user.id, id_espacio=tablero_relacionado.espacio_id)
+        except ParticipantesEspacio.DoesNotExist:
+            return Response(status=status.HTTP_403_FORBIDDEN)
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['GET', 'PUT', 'DELETE'])
+@permission_classes([IsAuthenticated])
+def detalle_tarjeta(request, pk):
+    user = request.user
+    try:
+        tarjeta = Tarjeta.objects.get(id=pk)
+    except Tarjeta.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+
+    lista_relacionada = Lista.objects.get(id=tarjeta.lista_relacionada.id)
+    tablero_relacionado = lista_relacionada.tablero_relacionado
+ 
+    try:
+        ParticipantesEspacio.objects.get(
+            id_participante=user.id, id_espacio=tablero_relacionado.espacio_id)
+    except ParticipantesEspacio.DoesNotExist:
+        return Response(status=status.HTTP_403_FORBIDDEN)
+
+    if request.method == 'GET':
+        serializer_tarjeta = TarjetaSerializer(tarjeta)
+        serializer_comentarios = ComentarioSerializer(tarjeta.comentario_set.all(), many=True)
+        info_tarjeta = serializer_tarjeta.data
+        info_comentarios = serializer_comentarios.data
+
+        for comentario in info_comentarios:
+            respuestas = RespuestaSerializer(Respuesta.objects.filter(
+                comentario_relacionado=comentario['id']), many=True)
+            comentario.update({'respuestas': respuestas.data})
+
+        info_tarjeta.update({'comentarios': info_comentarios})
+        return Response(info_tarjeta)
+
+    if user != tarjeta.creador_tarjeta:
+        return Response(status=status.HTTP_403_FORBIDDEN)
+
+    if request.method == 'PUT':
+        request.data['creador_tarjeta'] = tarjeta.creador_tarjeta.id
+        serializer = TarjetaSerializer(instance=tarjeta, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    if request.method == 'DELETE':
+        tarjeta.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def comentario(request):
+    user = request.user
+    request.data['creador_comentario'] = user.id
+    serializer = ComentarioSerializer(data=request.data)
+    if serializer.is_valid():
+        tarjeta_relacionada = Tarjeta.objects.get(id=request.data['tarjeta_relacionada'])
+        lista_relacionada = tarjeta_relacionada.lista_relacionada
+        tablero_relacionado = lista_relacionada.tablero_relacionado
+        try:
+            ParticipantesEspacio.objects.get(
+                id_participante=user.id, id_espacio=tablero_relacionado.espacio_id)
+        except ParticipantesEspacio.DoesNotExist:
+            return Response(status=status.HTTP_403_FORBIDDEN)
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def respuesta(request):
+    user = request.user
+    request.data['creador_respuesta'] = user.id
+    serializer = RespuestaSerializer(data=request.data)
+    if serializer.is_valid():
+        comentario_relacionado = Comentario.objects.get(id=request.data['comentario_relacionado'])
+        tarjeta_relacionada = comentario_relacionado.tarjeta_relacionada
+        lista_relacionada = tarjeta_relacionada.lista_relacionada
+        tablero_relacionado = lista_relacionada.tablero_relacionado
+        try:
+            ParticipantesEspacio.objects.get(
+                id_participante=user.id, id_espacio=tablero_relacionado.espacio_id)
+        except ParticipantesEspacio.DoesNotExist:
+            return Response(status=status.HTTP_403_FORBIDDEN)
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

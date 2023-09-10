@@ -50,11 +50,11 @@ class Tablero(models.Model):
 
 class Lista(models.Model):
     creador_lista = models.ForeignKey(
-        settings.AUTH_USER_MODEL, null=True, on_delete=models.CASCADE)
+        settings.AUTH_USER_MODEL, null=False, on_delete=models.CASCADE)
     tablero_relacionado = models.ForeignKey(
-        Tablero, null=True, on_delete=models.CASCADE)
-    nombre_lista = models.CharField(max_length=30, null=True)
-    fecha_creacion = models.DateTimeField(auto_now_add=True, null=True)
+        Tablero, null=False, on_delete=models.CASCADE)
+    nombre_lista = models.CharField(max_length=30, null=False)
+    fecha_creacion = models.DateTimeField(auto_now_add=True, null=False)
 
     def __str__(self):
         return self.nombre_lista
@@ -62,12 +62,12 @@ class Lista(models.Model):
 
 class Tarjeta(models.Model):
     creador_tarjeta = models.ForeignKey(
-        settings.AUTH_USER_MODEL, null=True, on_delete=models.CASCADE)
+        settings.AUTH_USER_MODEL, null=False, on_delete=models.CASCADE)
     lista_relacionada = models.ForeignKey(
-        Lista, null=True, on_delete=models.CASCADE)
-    titulo_tarjeta = models.CharField(max_length=30, null=True)
-    descripcion_tarjeta = models.CharField(max_length=256, null=True)
-    fecha_creacion = models.DateTimeField(auto_now_add=True, null=True)
+        Lista, null=False, on_delete=models.CASCADE)
+    titulo_tarjeta = models.CharField(max_length=30, null=False)
+    descripcion_tarjeta = models.CharField(max_length=256, null=False)
+    fecha_creacion = models.DateTimeField(auto_now_add=True, null=False)
 
     def __str__(self):
         return self.titulo_tarjeta
@@ -75,11 +75,11 @@ class Tarjeta(models.Model):
 
 class Comentario(models.Model):
     tarjeta_relacionada = models.ForeignKey(
-        Tarjeta, null=True, on_delete=models.CASCADE)
+        Tarjeta, null=False, on_delete=models.CASCADE)
     creador_comentario = models.ForeignKey(
-        settings.AUTH_USER_MODEL, null=True, on_delete=models.CASCADE)
-    texto_comentario = models.CharField(max_length=256, null=True)
-    fecha_creacion = models.DateTimeField(auto_now_add=True, null=True)
+        settings.AUTH_USER_MODEL, null=False, on_delete=models.CASCADE)
+    texto_comentario = models.CharField(max_length=256, null=False)
+    fecha_creacion = models.DateTimeField(auto_now_add=True, null=False)
 
     def __str__(self):
         return self.texto_comentario[0:100]
@@ -87,11 +87,11 @@ class Comentario(models.Model):
 
 class Respuesta(models.Model):
     comentario_relacionado = models.ForeignKey(
-        Comentario, null=True, on_delete=models.CASCADE)
+        Comentario, null=False, on_delete=models.CASCADE)
     creador_respuesta = models.ForeignKey(
-        settings.AUTH_USER_MODEL, null=True, on_delete=models.CASCADE)
-    texto_respuesta = models.CharField(max_length=256, null=True)
-    fecha_creacion = models.DateTimeField(auto_now_add=True, null=True)
+        settings.AUTH_USER_MODEL, null=False, on_delete=models.CASCADE)
+    texto_respuesta = models.CharField(max_length=256, null=False)
+    fecha_creacion = models.DateTimeField(auto_now_add=True, null=False)
 
     def __str__(self):
         return self.texto_respuesta[0:100]

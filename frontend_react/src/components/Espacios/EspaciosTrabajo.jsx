@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import espaciosService from "../../services/espaciosService";
 
-import CardEspacio from "../Espacios/CardEspacio"
+import CardEspacio from "./CardEspacio"
 import iconoSincronziar from "../../assets/img/sincronizar.png"
 
 

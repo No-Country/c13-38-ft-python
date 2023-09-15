@@ -1,16 +1,15 @@
 
-import icono from "../assets/img/logoVertical.png"
+import icono from "../assets/img/LogoVertical.png"
 import React, { useState } from 'react';
-
 import authService from "../services/authService";
-
 import Notification from '../components/Notification';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 function Login() {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState(null);
+    const navigate = useNavigate();
 
 
     const handleSubmit = async (e) => {

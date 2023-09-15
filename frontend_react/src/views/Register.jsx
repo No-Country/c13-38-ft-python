@@ -1,6 +1,6 @@
 // funcionando correctamente
 
-import icono from "../assets/img/logoVertical.png"
+import icono from "../assets/img/LogoVertical.png"
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import authService from "../services/authService";

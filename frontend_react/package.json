@@ -7,7 +7,7 @@
     "predeploy": "npm run build",
     "deploy": "gh-pages -d dist ",
     "dev": "vite",
-    "build": "vite build --base=/frontend/",
+    "build": "vite build --base=/frontend_react/",
     "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview"
   },

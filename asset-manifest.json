@@ -1,0 +1,19 @@
+{
+  "files": {
+    "main.css": "/c13-38-ft-python/static/css/main.4a973fc9.css",
+    "main.js": "/c13-38-ft-python/static/js/main.30f4da97.js",
+    "static/media/LogoVertical.png": "/c13-38-ft-python/static/media/LogoVertical.108fd062ddc70e6c5022.png",
+    "static/media/sincronizar.png": "/c13-38-ft-python/static/media/sincronizar.082afae8c7671a3ca081.png",
+    "static/media/regresar.svg": "/c13-38-ft-python/static/media/regresar.5c6cfdc8b9501f7bf9279ec6a05703aa.svg",
+    "static/media/user.svg": "/c13-38-ft-python/static/media/user.731617d512df2897728281d1ff4d57fa.svg",
+    "static/media/cerrar.svg": "/c13-38-ft-python/static/media/cerrar.e36ae4ad40703891d0cd7a8a11601371.svg",
+    "index.html": "/c13-38-ft-python/index.html",
+    "static/media/eliminar.svg": "/c13-38-ft-python/static/media/eliminar.491e35cd9023886bf0aebfc6564a8000.svg",
+    "main.4a973fc9.css.map": "/c13-38-ft-python/static/css/main.4a973fc9.css.map",
+    "main.30f4da97.js.map": "/c13-38-ft-python/static/js/main.30f4da97.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.4a973fc9.css",
+    "static/js/main.30f4da97.js"
+  ]
+}
